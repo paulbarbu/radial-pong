@@ -14,6 +14,11 @@ public class CircleArena extends Actor {
 	// This is used to avoid detecting the same collision multiple times.
 	private long COLLISION_TIME = 400;
 	private long collisionTimeCache = 0;
+	// As a simple workaround for the case where the ball is hitting the edge
+	// of the Pad, we just add a small "invisible" extension to the pad in order
+	// to make the ball bounce. It's not perfect, but simple and doesn't look that weird.
+	// The paddingAngle expresses how big this "invisible extension" is going to be.
+	private double paddingAngle;
 
 	private class Pad extends Actor{
 		protected float projectionAngle=45, startAngle=0, sweepAngle=90, radius, strokeWidth;
@@ -209,8 +214,9 @@ public class CircleArena extends Actor {
 		Point ballPos = b.getPosition();
 		
 		float ballAngle = this.pad.computeAngle(ballPos.x, ballPos.y); //TODO: not good placement for method, same for below
-										
-		if(this.pad.startAngle < ballAngle && ballAngle < this.pad.startAngle + this.pad.sweepAngle){
+		if(this.paddingAngle == 0)
+			this.paddingAngle = Math.toDegrees(Math.asin(b.getRadius()/this.radius))*0.75;
+		if(this.pad.startAngle - paddingAngle < ballAngle && ballAngle < this.pad.startAngle + this.pad.sweepAngle + paddingAngle){
 			float minInnerRadius = this.radius - this.pad.strokeWidth/2 - b.getRadius();
 			double d = this.pad.getDistToCenter(ballPos.x, ballPos.y);
 			if(d >= minInnerRadius){

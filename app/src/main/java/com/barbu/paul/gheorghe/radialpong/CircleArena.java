@@ -7,8 +7,6 @@ import android.graphics.RectF;
 import android.util.Log;
 import android.view.MotionEvent;
 
-import java.util.ArrayList;
-
 public class CircleArena extends Actor {
 	// Time a collision should last in ms.
 	// This is used to avoid detecting the same collision multiple times.
@@ -126,17 +124,6 @@ public class CircleArena extends Actor {
 	private float radius;
 	private Pad pad;
 	
-	private class MyPoint{
-		public float x, y;
-		
-		MyPoint(float x, float y){
-			this.x = x;
-			this.y = y;
-		}
-	}
-	
-	private ArrayList<MyPoint> circlePositions = new ArrayList<CircleArena.MyPoint>();
-		
 	public CircleArena(Point displaySize){
 		this.center.x = displaySize.x/2;
 		this.center.y = displaySize.y/2;
@@ -155,16 +142,9 @@ public class CircleArena extends Actor {
 		
 		Log.d(TAG, "Circle arena created!\ndisplaySize: " + displaySize + "\n radius=" + this.radius +
 			"\nstrokeWidth=" + strokeWidth + "\ncenter=" + this.center);
-		
-		computeCirclePositions();
+
 	}
-	
-	private void computeCirclePositions(){
-		for(double i=0; i<2*Math.PI; i+= 0.1){
-			circlePositions.add(new MyPoint((float) Math.cos(i), (float) Math.sin(i)));
-		}	
-	}
-	
+
 	@Override
 	public void update() {
 	}
@@ -194,14 +174,8 @@ public class CircleArena extends Actor {
 	
 	public boolean isBallOutside(Ball b){
 		Point ballPos = b.getPosition();
-										
-		for(MyPoint p : this.circlePositions){
-			if(this.pad.getDistToCenter(ballPos.x + p.x, ballPos.y + p.y) >= this.radius){
-				Log.d(TAG, "BALL OUTSIDE!");
-				return true;
-			}
-		}
-		
+		if(this.pad.getDistToCenter(ballPos.x, ballPos.y) >= this.radius)
+			return true;
 		return false;
 	}
 	

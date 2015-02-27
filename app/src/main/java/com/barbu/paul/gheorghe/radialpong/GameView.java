@@ -39,7 +39,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 		
 		this.arena = new CircleArena(displaySize);
 		this.ball = new Ball(displaySize);
-		this.gameThread = new GameThread(this);
 		
 		this.surfaceHolder.addCallback(this);
 		
@@ -48,8 +47,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
 	@Override
 	public void surfaceCreated(SurfaceHolder surfaceHolder){
+        this.gameThread = new GameThread(this);
 		this.gameThread.setRunning(true);
-		this.gameThread.start(); //TODO: if the application comes from the background (task manager) don't restart this, also pause the thread when in background
+		this.gameThread.start();
 		
 		this.render();
 		

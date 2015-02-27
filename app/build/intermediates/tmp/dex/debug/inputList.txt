@@ -1,2 +1,0 @@
-/home/paullik/localhost/AndroidStudioProjects/RadialPong/app/build/intermediates/classes/debug
-/home/paullik/localhost/AndroidStudioProjects/RadialPong/app/build/intermediates/pre-dexed/debug/support-v4-18.0.0-8499172ce415b5e1678dffba3052c809ec913518.jar

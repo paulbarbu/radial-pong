@@ -13,7 +13,8 @@ import android.view.MotionEvent;
 
 public class CircleArena extends Actor {
 	private class Pad extends Actor {
-		protected float projectionAngle=45, startAngle=0, sweepAngle=90, radius, strokeWidth;
+		protected float startAngle=0, arcStartAngle=0, radius, strokeWidth;
+        protected static final float sweepAngle=90;
 		protected Point center;
 		protected RectF boundingBox;
 		private Paint paint;
@@ -29,10 +30,8 @@ public class CircleArena extends Actor {
 			paint.setStrokeWidth(strokeWidth);
 			paint.setColor(0xFFFF0000);
 			
-			this.boundingBox = new RectF(center.x-radius,
-				center.y-radius, center.x + radius,
-				center.y+radius);
-			Log.d(TAG, "Pad created");
+			boundingBox = new RectF(center.x-radius, center.y-radius, center.x + radius, center.y+radius);
+			//Log.d(TAG, "Pad created");
 		}
 		
 		@Override
@@ -40,96 +39,105 @@ public class CircleArena extends Actor {
 		}
 
 		@Override
-		public void draw(Canvas c) {
-			c.drawArc(this.boundingBox, this.startAngle, this.sweepAngle, false, this.paint);
-		}
+		public void draw(Canvas c) {            
+			c.drawArc(boundingBox, arcStartAngle, sweepAngle, false, paint);
 
-		public boolean isInsideBounds(float x, float y){
-			double touchAngle = computeAngle(x, y);
-			double distToCenter = Helpers.pointDistance(new PointF(x, y), this.center);
+            if(false) // FIXME: debug
+            {
+                Paint p = new Paint();
+                p.setStyle(Paint.Style.STROKE);
+                p.setStrokeWidth(10);
+                p.setColor(Color.CYAN);
+
+                c.drawArc(boundingBox, arcStartAngle, 5, false, p);
+
+                p.setColor(Color.GREEN);
+                c.drawArc(boundingBox, arcStartAngle + sweepAngle, 5, false, p);
+            }
+		}
+        
+        public boolean isInsideAngle(Point p)
+        {
+            return isInsideAngle(new PointF(p.x, p.y));
+        }
+        
+        public boolean isInsideAngle(PointF p)
+        {
+            p = Helpers.mapDisplayPointTo(p, center);
+            double angle = Helpers.getAngle(p.x, p.y);
+
+//            Log.d(TAG, "x=" + p.x + " y=" + p.y);
+//            Log.d(TAG, "angle=" + angle);
+//            Log.d(TAG, "startAngle=" + startAngle);
+
+            // when the pad is in the first quadrant it will also be in the fourth,
+            // so I have to check for hit points there, too
+            if(startAngle < 90 && angle <= startAngle || angle >= 360+(startAngle-sweepAngle))
+            {
+//                Log.d(TAG, "first");
+                return  true;
+            }
             
-            Log.wtf(TAG, "Touch angle: " + touchAngle);
-									
-			if(this.startAngle < touchAngle && touchAngle < this.startAngle + this.sweepAngle &&
-					this.radius - this.strokeWidth/2 < distToCenter &&
-					distToCenter < this.radius + this.strokeWidth/2){
-				
-				Log.d(TAG, "INSIDE!");
+            // getAngle works in counter-clockwise order, but drawArc works clockwise (start - stop),
+            // so actually the startAngle will be bigger than the endAngle in counter-clockwise order
+            // since I hit first the stop then the start, and the desired angle has to be between them
+            if(startAngle >= angle && angle >= startAngle - sweepAngle)
+            {
+//                Log.d(TAG, "second");
+                return true;
+            }
+            
+            return false;
+        }
+
+		public boolean isInsideDistance(PointF touchPoint){
+			double distToCenter = Helpers.pointDistance(new PointF(touchPoint.x, touchPoint.y), center);
+
+			if(radius - strokeWidth/2 <= distToCenter && distToCenter <= radius + strokeWidth/2)
+            {
+//				Log.d(TAG, "Distance INSIDE!");
 				return true;
 			}
-			
+
+//            Log.d(TAG, "Distance OUTSIDE!");
 			return false;
-		}
-
-        /**
-         * Compute the angle of the line segment denoted by (center.x, center.y) and (x, y) with
-         * the OX axis (center.x, center.y) and (inf, center.y)
-         *
-         * https://en.wikipedia.org/wiki/Atan2
-         *
-         * @param x Global X coordinate
-         * @param y Global Y coordinate
-         * @return The angle in degrees 0 <= alpha <= 360
-         */
-		public double computeAngle(float x, float y){
-			float slope = (this.center.y - y)/(this.center.x - x);
-
-			float angle = (float)Math.toDegrees(Math.atan(slope));
-
-			if(x < this.center.x){
-				angle += 180;
-			}
-
-			return angle % 360;
-            
-            
-//            // translate the global coords to the center of the arena
-//            x -= center.x;
-//            y -= center.y;
-//
-//            // avoid the atan2 undefined case
-//            if(x == 0 && y == 0) {
-//                return 0;
-//            }
-//
-//            double angle = Math.atan2(y, x);
-//            if(angle < 0) {
-//                return (angle + 360) % 360;
-//            }
-//
-//            return angle;
 		}
 
 		@Override
 		public boolean handleTouchEvent(MotionEvent event) {
 			int action = event.getAction();
-			if(MotionEvent.ACTION_DOWN == action && isInsideBounds(event.getX(), event.getY())){
-				Log.d(TAG, "ACTION_DOWN");
+
+            PointF touchPoint = new PointF(event.getX(), event.getY());
+            
+			if(MotionEvent.ACTION_DOWN == action && isInsideDistance(touchPoint) && isInsideAngle(touchPoint)){
+//				Log.d(TAG, "ACTION_DOWN");
 				this.selected = true;
 				this.touched = true;
 				return true;
 			}
-			
+
 			if(this.selected && action == MotionEvent.ACTION_MOVE){
-                // TODO: this shouldn't be a class member
-				this.projectionAngle = (float) computeAngle(event.getX(), event.getY());
+                PointF p = Helpers.mapDisplayPointTo(touchPoint, center);
+				double touchAngle = Helpers.getAngle(p.x, p.y);
 
 				//TODO: do the drag relative to the touch position
-				this.startAngle = this.projectionAngle - 45;
+                //the drawArc method works clockwise, everything I calculate here is counter-clockwise
+				arcStartAngle = (float)(360-touchAngle);//(touchAngle - lastTouchAngle);
+                startAngle = (float)touchAngle;
 				
-				Log.d(TAG, "projectionAngle = " + this.projectionAngle);
-				Log.d(TAG, "startAngle = " + this.startAngle);
-				
+//				Log.d(TAG, "projectionAngle = " + touchAngle);
+//				Log.d(TAG, "startAngle = " + startAngle);
+
 				return true;
 			}
 			
 			if(this.selected && action == MotionEvent.ACTION_UP){
 				this.selected = false;
-				Log.d(TAG, "ACTION_UP");
+//				Log.d(TAG, "ACTION_UP");
 				return true;
 			}
-			
-			return false;
+
+            return false;
 		}
 	}
 	//TODO: set colors from outside
@@ -142,25 +150,14 @@ public class CircleArena extends Actor {
     private float collisionRadius;
 	private Pad pad;
 	private boolean skip = false;
-	
-	private class MyPoint{
-		public float x, y;
-		
-		MyPoint(float x, float y){
-			this.x = x;
-			this.y = y;
-		}
-	}
-	
-	private ArrayList<MyPoint> circlePositions = new ArrayList<CircleArena.MyPoint>();
-		
+
 	public CircleArena(final Point displaySize, final float ballRadius){
 		this.center.x = displaySize.x/2;
 		this.center.y = displaySize.y/2;
 		
 		this.radius = Math.min(this.center.x, this.center.y);
 		
-		float strokeWidth = 100;//this.radius * FACTOR;
+		float strokeWidth = this.radius * FACTOR;
 		this.radius -= strokeWidth; // reduce the radius so I allow the stroke to be displayed on screen
 				
 		this.paint = new Paint();
@@ -172,18 +169,10 @@ public class CircleArena extends Actor {
         
         this.collisionRadius = this.radius - strokeWidth/2 - ballRadius;
 		
-		Log.d(TAG, "Circle arena created!\ndisplaySize: " + displaySize + "\n radius=" + this.radius +
-			"\nstrokeWidth=" + strokeWidth + "\ncenter=" + this.center);
-		
-		computeCirclePositions();
+//		Log.d(TAG, "Circle arena created!\ndisplaySize: " + displaySize + "\n radius=" + this.radius +
+//			"\nstrokeWidth=" + strokeWidth + "\ncenter=" + this.center);
 	}
-	
-	private void computeCirclePositions(){
-		for(double i=0; i<2*Math.PI; i+= 0.1){
-			circlePositions.add(new MyPoint((float) Math.cos(i), (float) Math.sin(i)));
-		}	
-	}
-	
+
 	@Override
 	public void update() {
 	}
@@ -225,40 +214,23 @@ public class CircleArena extends Actor {
 	}
 	
 	public boolean isBallOutside(Ball b){
-		Point ballPos = b.getPosition();
-
-        if(Helpers.pointDistance(ballPos, this.center) >= this.collisionRadius){
+        if(Helpers.pointDistance(b.getPosition(), this.center) >= this.collisionRadius){
             return true;
         }
-		
+
 		return false;
 	}
+    
+    public boolean isBallAlmostOutside(Ball b, int offset)
+    {
+        if(Helpers.pointDistance(b.getPosition(), this.center) >= this.collisionRadius - offset){
+            return true;
+        }
+        
+        return false;
+    }
 	
 	public boolean isBallCollided(Ball b){
-		if(this.skip){
-			this.skip = false;
-			return false;
-		}
-		
-		Point ballPos = b.getPosition();
-		
-		double ballAngle = this.pad.computeAngle(ballPos.x, ballPos.y); //TODO: not good placement for method, same for below
-										
-		if(this.pad.startAngle < ballAngle && ballAngle < this.pad.startAngle + this.pad.sweepAngle){
-			float minInnerRadius = this.radius - this.pad.strokeWidth/2;
-			float maxInnerRadius = this.radius - this.pad.strokeWidth/4;
-			
-			for(MyPoint p : this.circlePositions){
-				double d = Helpers.pointDistance(ballPos, new PointF(p.x, p.y)); //TODO: refactor
-				
-				if(d >= minInnerRadius && d <= maxInnerRadius){
-					Log.d(TAG, "COLLISION!");
-					this.skip = true;
-					return true;
-				}
-			}
-		}
-		
-		return false;
+        return isBallAlmostOutside(b, (int) b.getRadius()/2) && pad.isInsideAngle(b.getPosition());
 	}
 }

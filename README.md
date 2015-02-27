@@ -4,6 +4,10 @@ Pong, but radial, for android devices
 
 **WORK IN PROGRESS!**
 
+Contributors
+============
+[Nelson Pérez](https://github.com/bilthon)
+
 
 License
 =======

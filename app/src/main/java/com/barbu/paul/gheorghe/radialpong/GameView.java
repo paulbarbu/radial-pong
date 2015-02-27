@@ -37,10 +37,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 			display.getSize(displaySize);
 		}
 		
-		this.arena = new CircleArena(displaySize);
-		this.ball = new Ball(displaySize);
 		
-		this.surfaceHolder.addCallback(this);
+		ball = new Ball(displaySize);
+        arena = new CircleArena(displaySize, ball.getRadius());
+		
+		surfaceHolder.addCallback(this);
 		
 		setFocusable(true);
 	}

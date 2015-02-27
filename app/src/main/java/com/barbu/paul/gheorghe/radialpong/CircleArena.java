@@ -10,6 +10,11 @@ import android.view.MotionEvent;
 import java.util.ArrayList;
 
 public class CircleArena extends Actor {
+	// Time a collision should last in ms.
+	// This is used to avoid detecting the same collision multiple times.
+	private long COLLISION_TIME = 400;
+	private long collisionTimeCache = 0;
+
 	private class Pad extends Actor{
 		protected float projectionAngle=45, startAngle=0, sweepAngle=90, radius, strokeWidth;
 		protected Point center;
@@ -196,6 +201,11 @@ public class CircleArena extends Actor {
 	}
 	
 	public boolean isBallCollided(Ball b){
+		long timestamp = System.currentTimeMillis();
+		if(timestamp - this.collisionTimeCache < this.COLLISION_TIME){
+			// Collision already detected
+			return false;
+		}
 		Point ballPos = b.getPosition();
 		
 		float ballAngle = this.pad.computeAngle(ballPos.x, ballPos.y); //TODO: not good placement for method, same for below
@@ -205,6 +215,7 @@ public class CircleArena extends Actor {
 			double d = this.pad.getDistToCenter(ballPos.x, ballPos.y);
 			if(d >= minInnerRadius){
 				Log.d(TAG, "COLLISION!");
+				this.collisionTimeCache = timestamp;
 				return true;
 			}
 		}

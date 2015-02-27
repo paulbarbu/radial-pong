@@ -1,13 +1,13 @@
 package com.barbu.paul.gheorghe.radialpong;
 
-import java.util.ArrayList;
-
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.RectF;
 import android.util.Log;
 import android.view.MotionEvent;
+
+import java.util.ArrayList;
 
 public class CircleArena extends Actor {
 	private class Pad extends Actor{
@@ -115,7 +115,6 @@ public class CircleArena extends Actor {
 	private Point center = new Point();
 	private float radius;
 	private Pad pad;
-	private boolean skip = false;
 	
 	private class MyPoint{
 		public float x, y;
@@ -197,27 +196,16 @@ public class CircleArena extends Actor {
 	}
 	
 	public boolean isBallCollided(Ball b){
-		if(this.skip){
-			this.skip = false;
-			return false;
-		}
-		
 		Point ballPos = b.getPosition();
 		
 		float ballAngle = this.pad.computeAngle(ballPos.x, ballPos.y); //TODO: not good placement for method, same for below
 										
 		if(this.pad.startAngle < ballAngle && ballAngle < this.pad.startAngle + this.pad.sweepAngle){
-			float minInnerRadius = this.radius - this.pad.strokeWidth/2;
-			float maxInnerRadius = this.radius - this.pad.strokeWidth/4;
-			
-			for(MyPoint p : this.circlePositions){
-				double d = this.pad.getDistToCenter(ballPos.x + p.x, ballPos.y + p.y);
-				
-				if(d >= minInnerRadius && d <= maxInnerRadius){
-					Log.d(TAG, "COLLISION!");
-					this.skip = true;
-					return true;
-				}
+			float minInnerRadius = this.radius - this.pad.strokeWidth/2 - b.getRadius();
+			double d = this.pad.getDistToCenter(ballPos.x, ballPos.y);
+			if(d >= minInnerRadius){
+				Log.d(TAG, "COLLISION!");
+				return true;
 			}
 		}
 		

@@ -83,9 +83,4 @@ public class Ball extends Actor {
 		c.drawCircle(this.pos.x, this.pos.y, this.radius, this.paint);
 	}
 
-	@Override
-	public boolean handleTouchEvent(MotionEvent event) {
-		return false;
-	}
-
 }

@@ -133,7 +133,8 @@ public class CircleArena extends Actor {
                 }
                 
                 startAngle = startAngle + deltaAngle;
-                startAngle = (startAngle + 360) % 360;
+                startAngle = (startAngle + 360) % 360; //wrap around the circle
+                
                 //the drawArc method works clockwise, everything I calculate here is counter-clockwise
 				arcStartAngle = 360-startAngle;
                 
@@ -143,7 +144,7 @@ public class CircleArena extends Actor {
 				Log.d(TAG, "startAngle = " + startAngle);
 
 
-                lastTouchAngle = (float)touchAngle;
+                lastTouchAngle = touchAngle;
 
 				return true;
 			}

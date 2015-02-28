@@ -53,13 +53,30 @@ public class CircleArena extends Actor {
                 c.drawArc(boundingBox, arcStartAngle + sweepAngle, 5, false, p);
             }
 		}
-        
+
         public boolean isInsideAngle(Point p)
         {
-            return isInsideAngle(new PointF(p.x, p.y));
+            return isInsideAngle(new PointF(p.x, p.y), 0);
         }
         
         public boolean isInsideAngle(PointF p)
+        {
+            return isInsideAngle(p, 0);
+        }
+
+        public boolean isInsideAngle(Point p, float paddingAngle)
+        {
+            return isInsideAngle(new PointF(p.x, p.y), paddingAngle);
+        }
+
+        /**
+         * The padding idea came from here:
+         * https://github.com/bilthon/radial-pong/commit/86b96382583f4a28cd4a65643af037c12a54f589
+         * @param p
+         * @param paddingAngle
+         * @return
+         */
+        public boolean isInsideAngle(PointF p, float paddingAngle)
         {
             p = Helpers.mapDisplayPointTo(p, center);
             double angle = Helpers.getAngle(p.x, p.y);
@@ -70,24 +87,24 @@ public class CircleArena extends Actor {
 
             // when the pad is in the first quadrant it will also be in the fourth,
             // so I have to check for hit points there, too
-            if(startAngle < 90 && angle <= startAngle || angle >= 360+(startAngle-sweepAngle))
+            if(startAngle < 90 && angle <= paddingAngle + startAngle || angle >= 360+(startAngle-sweepAngle-paddingAngle))
             {
 //                Log.d(TAG, "first");
                 return  true;
             }
-            
+
             // getAngle works in counter-clockwise order, but drawArc works clockwise (start - stop),
             // so actually the startAngle will be bigger than the endAngle in counter-clockwise order
             // since I hit first the stop then the start, and the desired angle has to be between them
-            if(startAngle >= angle && angle >= startAngle - sweepAngle)
+            if(startAngle + paddingAngle >= angle && angle >= startAngle - sweepAngle - paddingAngle)
             {
 //                Log.d(TAG, "second");
                 return true;
             }
-            
+
             return false;
         }
-
+        
 		public boolean isInsideDistance(PointF touchPoint){
 			double distToCenter = Helpers.pointDistance(new PointF(touchPoint.x, touchPoint.y), center);
 
@@ -248,6 +265,7 @@ public class CircleArena extends Actor {
     }
 	
 	public boolean isBallCollided(Ball b){
-        return isBallAlmostOutside(b, (int) b.getRadius()/2) && pad.isInsideAngle(b.getPosition());
+        float paddingAngle = (float) Math.toDegrees(Math.asin(b.getRadius()/radius));
+        return isBallAlmostOutside(b, (int) b.getRadius()/2) && pad.isInsideAngle(b.getPosition(), paddingAngle);
 	}
 }

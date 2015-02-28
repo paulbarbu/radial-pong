@@ -1,7 +1,5 @@
 package com.barbu.paul.gheorghe.radialpong;
 
-import java.util.ArrayList;
-
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -13,7 +11,7 @@ import android.view.MotionEvent;
 
 public class CircleArena extends Actor {
 	private class Pad extends Actor {
-		protected float startAngle=0, arcStartAngle=0, radius, strokeWidth;
+		protected float startAngle=0, arcStartAngle=0, radius, strokeWidth, lastTouchAngle;
         protected static final float sweepAngle=90;
 		protected Point center;
 		protected RectF boundingBox;
@@ -113,20 +111,39 @@ public class CircleArena extends Actor {
 //				Log.d(TAG, "ACTION_DOWN");
 				this.selected = true;
 				this.touched = true;
+
+
+                PointF p = Helpers.mapDisplayPointTo(touchPoint, center);
+                lastTouchAngle = (float)Helpers.getAngle(p.x, p.y);
+                
 				return true;
 			}
 
 			if(this.selected && action == MotionEvent.ACTION_MOVE){
                 PointF p = Helpers.mapDisplayPointTo(touchPoint, center);
-				double touchAngle = Helpers.getAngle(p.x, p.y);
+				float touchAngle = (float)Helpers.getAngle(p.x, p.y);
 
-				//TODO: do the drag relative to the touch position
+                float deltaAngle = touchAngle-lastTouchAngle;
+                
+                // this may happen if the user touches, say,  first at 354 deg then at 1 deg
+                // in this case the delta should be 360-354 + 1 = 7 deg, not -353 deg
+                if(deltaAngle < 0)
+                {
+                    deltaAngle = 360-lastTouchAngle + touchAngle;
+                }
+                
+                startAngle = startAngle + deltaAngle;
+                startAngle = (startAngle + 360) % 360;
                 //the drawArc method works clockwise, everything I calculate here is counter-clockwise
-				arcStartAngle = (float)(360-touchAngle);//(touchAngle - lastTouchAngle);
-                startAngle = (float)touchAngle;
-				
-//				Log.d(TAG, "projectionAngle = " + touchAngle);
-//				Log.d(TAG, "startAngle = " + startAngle);
+				arcStartAngle = 360-startAngle;
+                
+                Log.d(TAG, "touchAngle = " + touchAngle);
+                Log.d(TAG, "lastTouchAngle = " + lastTouchAngle);
+                Log.d(TAG, "deltaAngle = " + deltaAngle);
+				Log.d(TAG, "startAngle = " + startAngle);
+
+
+                lastTouchAngle = (float)touchAngle;
 
 				return true;
 			}
@@ -149,7 +166,6 @@ public class CircleArena extends Actor {
 	private float radius;
     private float collisionRadius;
 	private Pad pad;
-	private boolean skip = false;
 
 	public CircleArena(final Point displaySize, final float ballRadius){
 		this.center.x = displaySize.x/2;

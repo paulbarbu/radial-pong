@@ -26,7 +26,7 @@ public class CircleArena extends Actor {
 			paint = new Paint();
 			paint.setStyle(Paint.Style.STROKE);
 			paint.setStrokeWidth(strokeWidth);
-			paint.setColor(0xFFFF0000);
+			paint.setColor(Color.CYAN);
 			
 			boundingBox = new RectF(center.x-radius, center.y-radius, center.x + radius, center.y+radius);
 			//Log.d(TAG, "Pad created");
@@ -54,17 +54,17 @@ public class CircleArena extends Actor {
             }
 		}
 
-        public boolean isInsideAngle(Point p)
+        protected boolean isInsideAngle(Point p)
         {
             return isInsideAngle(new PointF(p.x, p.y), 0);
         }
         
-        public boolean isInsideAngle(PointF p)
+        protected boolean isInsideAngle(PointF p)
         {
             return isInsideAngle(p, 0);
         }
 
-        public boolean isInsideAngle(Point p, float paddingAngle)
+        protected boolean isInsideAngle(Point p, float paddingAngle)
         {
             return isInsideAngle(new PointF(p.x, p.y), paddingAngle);
         }
@@ -76,7 +76,7 @@ public class CircleArena extends Actor {
          * @param paddingAngle
          * @return
          */
-        public boolean isInsideAngle(PointF p, float paddingAngle)
+        protected boolean isInsideAngle(PointF p, float paddingAngle)
         {
             p = Helpers.mapDisplayPointTo(p, center);
             double angle = Helpers.getAngle(p.x, p.y);
@@ -99,7 +99,7 @@ public class CircleArena extends Actor {
             return startAngle + paddingAngle >= angle && angle >= startAngle - sweepAngle - paddingAngle;
         }
         
-		public boolean isInsideDistance(PointF touchPoint){
+		protected boolean isInsideDistance(PointF touchPoint){
 			double distToCenter = Helpers.pointDistance(new PointF(touchPoint.x, touchPoint.y), center);
 
 			if(radius - strokeWidth/2 <= distToCenter && distToCenter <= radius + strokeWidth/2)
@@ -178,6 +178,8 @@ public class CircleArena extends Actor {
 	private float radius;
     private float collisionRadius;
 	private Pad pad;
+    private int bgColor = Color.WHITE;
+    private boolean ballInside = true;
 
 	public CircleArena(final Point displaySize, final float ballRadius){
 		this.center.x = displaySize.x/2;
@@ -204,9 +206,25 @@ public class CircleArena extends Actor {
 	@Override
 	public void update() {
 	}
+    
+    public void update(Ball b)
+    {
+        if(isBallOutside(b))
+        {
+            //TODO: vibrate ONCE
+            bgColor = Color.RED;
+            ballInside = false;
+        }
+        else if(isBallInside(b))
+        {
+            bgColor = Color.WHITE;
+            ballInside = true;
+        }
+    }
 
 	@Override
 	public void draw(Canvas c) {
+        c.drawColor(bgColor);
 		c.drawCircle(this.center.x, this.center.y, this.radius, this.paint);
         
         if(false) //FIXME: DEBUG
@@ -240,18 +258,24 @@ public class CircleArena extends Actor {
 			pad.selected = false;
 		}
 	}
-	
-	public boolean isBallOutside(Ball b){
-        return Helpers.pointDistance(b.getPosition(), this.center) >= this.collisionRadius;
-    }
-    
-    public boolean isBallAlmostOutside(Ball b, int offset)
+
+    protected boolean isBallOutside(Ball b)
     {
-        return Helpers.pointDistance(b.getPosition(), this.center) >= this.collisionRadius - offset;
+        return Helpers.pointDistance(b.getPosition(), this.center) >= this.collisionRadius + b.getRadius()/2;
     }
-	
+
+    protected boolean isBallInside(Ball b)
+    {
+        return Helpers.pointDistance(b.getPosition(), this.center) <= this.collisionRadius - b.getRadius()/2;
+    }
+
+    protected boolean isBallInRange(Ball b)
+    {
+        return !isBallOutside(b) && Helpers.pointDistance(b.getPosition(), this.center) >= this.collisionRadius;
+    }
+    	
 	public boolean isBallCollided(Ball b){
-        float paddingAngle = (float) Math.toDegrees(Math.asin(b.getRadius()/radius));
-        return isBallAlmostOutside(b, (int) b.getRadius()/2) && pad.isInsideAngle(b.getPosition(), paddingAngle);
+        float paddingAngle = (float) Math.toDegrees(Math.asin(b.getRadius() / radius));
+        return ballInside && isBallInRange(b) && pad.isInsideAngle(b.getPosition(), paddingAngle);
 	}
 }

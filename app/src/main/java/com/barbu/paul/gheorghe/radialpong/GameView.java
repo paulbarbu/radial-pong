@@ -19,7 +19,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 	protected GameThread gameThread;
 	
 	protected CircleArena arena;
-	protected Ball ball; 
+	protected Ball ball;
+    private Point displaySize =  new Point();
 	
 	@SuppressLint("NewApi")
 	public GameView(Context context){
@@ -29,14 +30,13 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 		//TODO: pad no larger than 90 and no smaller than ...
 		//TODO: handle activity lifetime, and interruptions like calls
 		//TODO: http://stackoverflow.com/questions/1016896/how-to-get-screen-dimensions
-		Point displaySize =  new Point();
+		
 		WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 		Display display = wm.getDefaultDisplay(); //TODO: check for null
 		
 		if(display != null){
 			display.getSize(displaySize);
 		}
-		
 		
 		ball = new Ball(displaySize);
         arena = new CircleArena(displaySize, ball.getRadius());
@@ -65,15 +65,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 		}
 		
 		try{
-			c.drawColor(Color.WHITE); //TODO:
-			this.arena.draw(c);
-			this.ball.draw(c);
+			arena.draw(c);
+			ball.draw(c);
 		}
 		finally{
 			this.surfaceHolder.unlockCanvasAndPost(c);
 		}
 	}
-	
+	//TODO: when the player lifts the finger, pause
 	public void reset(){
 		this.ball.init();
 
@@ -83,20 +82,29 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 		this.render();
 	}	
 	public void update(){
-		if(this.arena.isBallCollided(ball)){
-			//turn it around
-			//TODO: animate and sound
-			this.ball.setVelocityX(-1*this.ball.getVelocityX());
-			this.ball.setVelocityY(-1*this.ball.getVelocityY());
-		}
-        
-        if(this.arena.isBallOutside(ball)){
-            //TODO: vibrate
-            this.reset();
-            return;
+        Point p = ball.getPosition();
+        float offset = ball.getRadius();
+
+        if(p.x + offset >= displaySize.x || p.x - offset <= 0)
+        {
+            ball.setVelocityX(-1*ball.getVelocityX());
         }
-		
-		this.ball.update();
+
+        if(p.y + offset >= displaySize.y || p.y - offset <= 0)
+        {
+            ball.setVelocityY(-1*ball.getVelocityY());
+        }
+
+        ball.update();
+        arena.update(ball);
+
+        if(arena.isBallCollided(ball)){
+
+            //TODO: proper "reflection" of the ball from the pad
+            //TODO: animate and sound
+            ball.setVelocityX(-1*this.ball.getVelocityX());
+            ball.setVelocityY(-1*this.ball.getVelocityY());
+        }
 	}
 	
 	@Override

@@ -96,13 +96,7 @@ public class CircleArena extends Actor {
             // getAngle works in counter-clockwise order, but drawArc works clockwise (start - stop),
             // so actually the startAngle will be bigger than the endAngle in counter-clockwise order
             // since I hit first the stop then the start, and the desired angle has to be between them
-            if(startAngle + paddingAngle >= angle && angle >= startAngle - sweepAngle - paddingAngle)
-            {
-//                Log.d(TAG, "second");
-                return true;
-            }
-
-            return false;
+            return startAngle + paddingAngle >= angle && angle >= startAngle - sweepAngle - paddingAngle;
         }
         
 		public boolean isInsideDistance(PointF touchPoint){
@@ -248,20 +242,12 @@ public class CircleArena extends Actor {
 	}
 	
 	public boolean isBallOutside(Ball b){
-        if(Helpers.pointDistance(b.getPosition(), this.center) >= this.collisionRadius){
-            return true;
-        }
-
-		return false;
-	}
+        return Helpers.pointDistance(b.getPosition(), this.center) >= this.collisionRadius;
+    }
     
     public boolean isBallAlmostOutside(Ball b, int offset)
     {
-        if(Helpers.pointDistance(b.getPosition(), this.center) >= this.collisionRadius - offset){
-            return true;
-        }
-        
-        return false;
+        return Helpers.pointDistance(b.getPosition(), this.center) >= this.collisionRadius - offset;
     }
 	
 	public boolean isBallCollided(Ball b){

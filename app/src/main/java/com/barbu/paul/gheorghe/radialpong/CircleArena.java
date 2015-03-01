@@ -206,7 +206,16 @@ public class CircleArena extends Actor {
 	@Override
 	public void update() {
 	}
-    
+
+    /**
+     * There, as you can see from isBallInside and isBallOutside methods, is a gap between the "outside"
+     * and the "inside" areas, this allows me to avoid the collision when the ball is coming from the
+     * outside zone into the inside zone and bounce it back outside, because when the ball will
+     * actually be inside (coming from outside) the collision detection algorithm won't detect a collision
+     * since the radius of the inside zone is a bit smaller than the collision radius
+     * So it's crucial to keep the "ballInside" variable the same while the ball is between the two zones
+     * @param b
+     */
     public void update(Ball b)
     {
         if(isBallOutside(b))
@@ -268,14 +277,12 @@ public class CircleArena extends Actor {
     {
         return Helpers.pointDistance(b.getPosition(), this.center) <= this.collisionRadius - b.getRadius()/2;
     }
-
-    protected boolean isBallInRange(Ball b)
-    {
-        return !isBallOutside(b) && Helpers.pointDistance(b.getPosition(), this.center) >= this.collisionRadius;
-    }
     	
 	public boolean isBallCollided(Ball b){
         float paddingAngle = (float) Math.toDegrees(Math.asin(b.getRadius() / radius));
-        return ballInside && isBallInRange(b) && pad.isInsideAngle(b.getPosition(), paddingAngle);
+        // if the ball is still inside and going outside (the distance to the center of the arena is greater
+        // than the collision radius) and the angle of the ball is "inside" the pad then I have a collision
+        return ballInside && Helpers.pointDistance(b.getPosition(), this.center) >= this.collisionRadius
+            && pad.isInsideAngle(b.getPosition(), paddingAngle);
 	}
 }

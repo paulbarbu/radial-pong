@@ -14,7 +14,7 @@ public class Ball extends Actor {
 	private Paint paint;
 	private int vx, vy;
 
-	private static final float FACTOR = 0.10f; //15% //TODO try on the phone dynamically
+	private static final float FACTOR = 0.10f;
 	private static final int SPEED = 64; //this is the squared speed TODO: set from outside, this is the number of pixels per 30th part of a second (see MAX_FPS)
 	private static final String TAG = Ball.class.getSimpleName();
 	
@@ -44,9 +44,6 @@ public class Ball extends Actor {
 		this.vx = (int) Math.sqrt(val) * Helpers.boolToSign(r.nextBoolean());
 		this.vy = (int) Math.sqrt(SPEED-val) * Helpers.boolToSign(r.nextBoolean());
 	}
-	
-	//TODO: set vx, vy device independent and FPS-aware in order to get a constant game speed
-	//TODO: change vx and vy according to collisions
 	
 	public Point getPosition(){
 		return this.pos;

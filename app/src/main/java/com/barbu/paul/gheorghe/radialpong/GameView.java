@@ -21,18 +21,16 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 	protected CircleArena arena;
 	protected Ball ball;
     private Point displaySize =  new Point();
-	
-	@SuppressLint("NewApi")
+
 	public GameView(Context context){
 		super(context);		
 		this.surfaceHolder = getHolder();
-		//TODO: try to remove supresslint
 		//TODO: pad no larger than 90 and no smaller than ...
 		//TODO: handle activity lifetime, and interruptions like calls
 		//TODO: http://stackoverflow.com/questions/1016896/how-to-get-screen-dimensions
 		
 		WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-		Display display = wm.getDefaultDisplay(); //TODO: check for null
+		Display display = wm.getDefaultDisplay();
 		
 		if(display != null){
 			display.getSize(displaySize);

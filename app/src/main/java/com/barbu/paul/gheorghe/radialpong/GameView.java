@@ -72,16 +72,13 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 			this.surfaceHolder.unlockCanvasAndPost(c);
 		}
 	}
-	//TODO: when the player lifts the finger, pause
-	public void reset(){
-		this.ball.init();
 
-		this.gameThread.setPaused(true);
-		this.arena.setTouched(false);
-		
-		this.render();
-	}	
 	public void update(){
+        if(!arena.isTouched())
+        {
+            return;
+        }
+
         Point p = ball.getPosition();
         float offset = ball.getRadius();
 
@@ -106,7 +103,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             ball.setVelocityY(-1*this.ball.getVelocityY());
         }
 	}
-	
+
 	@Override
 	public boolean onTouchEvent(MotionEvent event){
 		boolean retval = this.arena.handleTouchEvent(event);

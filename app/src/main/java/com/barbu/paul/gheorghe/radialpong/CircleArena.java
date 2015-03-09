@@ -16,7 +16,7 @@ public class CircleArena extends Actor {
 		protected Point center;
 		protected RectF boundingBox;
 		private Paint paint;
-		private boolean selected = false, touched = false;
+		private boolean touched = false;
 		
 		public Pad(final Point center, final float radius, final float strokeWidth){
 			this.center = new Point(center);
@@ -31,7 +31,7 @@ public class CircleArena extends Actor {
 			boundingBox = new RectF(center.x-radius, center.y-radius, center.x + radius, center.y+radius);
 			//Log.d(TAG, "Pad created");
 		}
-		
+
 		@Override
 		public void update() {
 		}
@@ -70,11 +70,14 @@ public class CircleArena extends Actor {
         }
 
         /**
+         * Test if a point projection is inside the pad with regards to the angle
+         *
          * The padding idea came from here:
          * https://github.com/bilthon/radial-pong/commit/86b96382583f4a28cd4a65643af037c12a54f589
-         * @param p
-         * @param paddingAngle
-         * @return
+         *
+         * @param p the point for which the angle is to be calculated, relative to the center of the circle
+         * @param paddingAngle the angle to be added to the pad so that edge collisions are nicely handled
+         * @return true if the point is inside the pad, angle wise, false otherwise
          */
         protected boolean isInsideAngle(PointF p, float paddingAngle)
         {
@@ -98,7 +101,12 @@ public class CircleArena extends Actor {
             // since I hit first the stop then the start, and the desired angle has to be between them
             return startAngle + paddingAngle >= angle && angle >= startAngle - sweepAngle - paddingAngle;
         }
-        
+
+        /**
+         * Test is the given point is touching the pad
+         * @param touchPoint the touch point to test if is inside the pad (the stroke is considered accordingly)
+         * @return true if the point is inside, false otherwise
+         */
 		protected boolean isInsideDistance(PointF touchPoint){
 			double distToCenter = Helpers.pointDistance(new PointF(touchPoint.x, touchPoint.y), center);
 
@@ -120,9 +128,7 @@ public class CircleArena extends Actor {
             
 			if(MotionEvent.ACTION_DOWN == action && isInsideDistance(touchPoint) && isInsideAngle(touchPoint)){
 //				Log.d(TAG, "ACTION_DOWN");
-				this.selected = true;
 				this.touched = true;
-
 
                 PointF p = Helpers.mapDisplayPointTo(touchPoint, center);
                 lastTouchAngle = (float)Helpers.getAngle(p.x, p.y);
@@ -130,10 +136,12 @@ public class CircleArena extends Actor {
 				return true;
 			}
 
-			if(this.selected && action == MotionEvent.ACTION_MOVE){
+			if(this.touched && action == MotionEvent.ACTION_MOVE){
                 PointF p = Helpers.mapDisplayPointTo(touchPoint, center);
 				float touchAngle = (float)Helpers.getAngle(p.x, p.y);
 
+                //deltaAngle is the offset that should be added to the startAngle of the Pad
+                // relative to the startAngle so the pad doesn't jump around when it's selected
                 float deltaAngle = touchAngle-lastTouchAngle;
                 
                 // this may happen if the user touches, say,  first at 354 deg then at 1 deg
@@ -160,8 +168,8 @@ public class CircleArena extends Actor {
 				return true;
 			}
 			
-			if(this.selected && action == MotionEvent.ACTION_UP){
-				this.selected = false;
+			if(this.touched && action == MotionEvent.ACTION_UP){
+				this.touched = false;
 //				Log.d(TAG, "ACTION_UP");
 				return true;
 			}
@@ -208,13 +216,16 @@ public class CircleArena extends Actor {
 	}
 
     /**
+     * Update the arena with regards to the ball's position
+     *
      * There, as you can see from isBallInside and isBallOutside methods, is a gap between the "outside"
      * and the "inside" areas, this allows me to avoid the collision when the ball is coming from the
      * outside zone into the inside zone and bounce it back outside, because when the ball will
      * actually be inside (coming from outside) the collision detection algorithm won't detect a collision
      * since the radius of the inside zone is a bit smaller than the collision radius
      * So it's crucial to keep the "ballInside" variable the same while the ball is between the two zones
-     * @param b
+     *
+     * @param b the ball that will influence how the arena will be updated
      */
     public void update(Ball b)
     {
@@ -256,16 +267,12 @@ public class CircleArena extends Actor {
 		return this.pad.handleTouchEvent(event);
 	}
 
+    /**
+     * Check if the user touches the pad
+     * @return true if hte pad is touched, false otherwise
+     */
 	public boolean isTouched(){
 		return pad.touched;
-	}
-	
-	public void setTouched(boolean state){
-		pad.touched = state;
-		
-		if(!state){
-			pad.selected = false;
-		}
 	}
 
     protected boolean isBallOutside(Ball b)
@@ -277,7 +284,12 @@ public class CircleArena extends Actor {
     {
         return Helpers.pointDistance(b.getPosition(), this.center) <= this.collisionRadius - b.getRadius()/2;
     }
-    	
+
+    /**
+     * Check if the ball collides with the pad
+     * @param b the ball to be checked for collisions against the pad
+     * @return true if the ball is colliding with the pad, false otherwise
+     */
 	public boolean isBallCollided(Ball b){
         float paddingAngle = (float) Math.toDegrees(Math.asin(b.getRadius() / radius));
         // if the ball is still inside and going outside (the distance to the center of the arena is greater

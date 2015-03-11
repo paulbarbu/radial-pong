@@ -10,7 +10,7 @@ import android.view.MotionEvent;
 
 public class Ball extends Actor {
 	private float radius;
-	private Point pos = new Point(), displaySize;
+	private Point pos = new Point();
 	private Paint paint;
 	private int vx, vy;
 
@@ -19,65 +19,58 @@ public class Ball extends Actor {
 	private static final String TAG = Ball.class.getSimpleName();
 	
 	public Ball(Point displaySize){
-		this.displaySize = displaySize;
-		
 		paint = new Paint();
 		paint.setColor(0xFF0000FF); //TODO: set it from outside
 		paint.setStyle(Paint.Style.FILL);
-				
-		init();
-		
-		this.radius = Math.min(this.pos.x, this.pos.y) * FACTOR;
-		Log.d(TAG, "Ball created!\n radius=" + this.radius + "\npos=" + this.pos);
-		
-	}
-	
-	public void init(){
-		this.pos.x = displaySize.x/2;
-		this.pos.y = displaySize.y/2;
 
-		//set the direction
-		Random r = new Random();
+        pos.x = displaySize.x/2;
+        pos.y = displaySize.y/2;
+        radius = Math.min(pos.x, pos.y) * FACTOR;
+
+        //set the direction
+        Random r = new Random();
+        int val = r.nextInt(SPEED+1);
+
+        vx = (int) Math.sqrt(val) * Helpers.boolToSign(r.nextBoolean());
+        vy = (int) Math.sqrt(SPEED-val) * Helpers.boolToSign(r.nextBoolean());
+
+		Log.d(TAG, "Ball created!\n radius=" + radius + "\npos=" + pos);
 		
-		int val = r.nextInt(SPEED+1);
-		
-		this.vx = (int) Math.sqrt(val) * Helpers.boolToSign(r.nextBoolean());
-		this.vy = (int) Math.sqrt(SPEED-val) * Helpers.boolToSign(r.nextBoolean());
 	}
 	
 	public Point getPosition(){
-		return this.pos;
+		return pos;
 	}
 	
 	public int getVelocityX(){
-		return this.vx;
+		return vx;
 	}
 	
 	public int getVelocityY(){
-		return this.vy;
+		return vy;
 	}
 	
 	public void setVelocityX(int val){
-		this.vx = val;
+		vx = val;
 	}
 	
 	public void setVelocityY(int val){
-		this.vy = val;
+		vy = val;
 	}
 	
 	public float getRadius(){
-		return this.radius;
+		return radius;
 	}
 	
 	@Override
 	public void update() {
-		this.pos.x += vx;
-		this.pos.y += vy;
+		pos.x += vx;
+		pos.y += vy;
 	}
 	
 	@Override
 	public void draw(Canvas c) {
-		c.drawCircle(this.pos.x, this.pos.y, this.radius, this.paint);
+		c.drawCircle(pos.x, pos.y, radius, paint);
 	}
 
 }

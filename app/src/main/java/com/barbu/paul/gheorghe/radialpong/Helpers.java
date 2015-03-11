@@ -77,6 +77,6 @@ public class Helpers {
     {
         double magA = mag(x1, y1);
         double magB = mag(x2, y2);
-        return Math.acos(scalar(x1, y1, x2, y2)/(magA*magB));
+        return Math.toDegrees(Math.acos(scalar(x1, y1, x2, y2)/(magA*magB)));
     }
 }

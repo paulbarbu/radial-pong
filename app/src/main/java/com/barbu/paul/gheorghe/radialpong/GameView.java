@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.PointF;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -93,9 +94,21 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         ball.update();
         arena.update(ball);
 
+        //TODO: move these into the update function of the arena and get rid of the getCenter method
         if(arena.isBallCollided(ball)){
-
-            Log.d(TAG, "Angle of ball: " + Helpers.angle(ball.getVelocityX(), ball.getVelocityY(), ball.getVelocityX(), 0));
+            //TODO: 90 deg, not a number -> random
+            //TODO: when the angles are too close ~5 deg, add a random number to them
+            int vx = ball.getVelocityX();
+            int vy = ball.getVelocityY();
+            double angle = Helpers.angle(vx, vy, Math.abs(vx), 0);
+            if(vy > 0)
+            {
+                angle = 360 - angle;
+            }
+            Log.d(TAG, "Angle of ball: " + angle);
+            
+            PointF point = Helpers.mapDisplayPointTo(ball.getPosition(), arena.getCenter());
+            Log.d(TAG, "Angle to center: " + Helpers.getAngle(point.x, point.y));
             //TODO: proper "reflection" of the ball from the pad
             //TODO: animate and sound
             ball.setVelocityX(-1*this.ball.getVelocityX());

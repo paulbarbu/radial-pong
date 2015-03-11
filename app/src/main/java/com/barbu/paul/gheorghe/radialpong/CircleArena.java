@@ -14,7 +14,9 @@ public class CircleArena extends Actor {
 	private class Pad extends Actor {
 		protected float startAngle=0, arcStartAngle=0, radius, strokeWidth, lastTouchAngle;
         protected static final float sweepAngle=90;
-		protected Point center;
+       
+
+        protected Point center;
 		protected RectF boundingBox;
 		private Paint paint;
 		private boolean touched = false;
@@ -300,4 +302,8 @@ public class CircleArena extends Actor {
         return ballInside && Helpers.pointDistance(b.getPosition(), this.center) >= this.collisionRadius
             && pad.isInsideAngle(b.getPosition(), paddingAngle);
 	}
+
+    public Point getCenter() {
+        return center;
+    }
 }

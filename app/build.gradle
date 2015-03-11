@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.barbu.paul.gheorghe.radialpong"
-        minSdkVersion 8
+        minSdkVersion 13
         targetSdkVersion 19
     }
 
@@ -16,8 +16,4 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
-}
-
-dependencies {
-    compile 'com.android.support:support-v4:18.0.0'
 }

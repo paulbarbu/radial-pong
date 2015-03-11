@@ -8,6 +8,7 @@ import android.graphics.PointF;
 import android.graphics.RectF;
 import android.util.Log;
 import android.view.MotionEvent;
+import static com.barbu.paul.gheorghe.radialpong.Helpers.DEBUG_MODE;
 
 public class CircleArena extends Actor {
 	private class Pad extends Actor {
@@ -40,7 +41,7 @@ public class CircleArena extends Actor {
 		public void draw(Canvas c) {            
 			c.drawArc(boundingBox, arcStartAngle, sweepAngle, false, paint);
 
-            if(false) // FIXME: debug
+            if(DEBUG_MODE)
             {
                 Paint p = new Paint();
                 p.setStyle(Paint.Style.STROKE);
@@ -156,11 +157,13 @@ public class CircleArena extends Actor {
                 
                 //the drawArc method works clockwise, everything I calculate here is counter-clockwise
 				arcStartAngle = 360-startAngle;
-                
-                Log.d(TAG, "touchAngle = " + touchAngle);
-                Log.d(TAG, "lastTouchAngle = " + lastTouchAngle);
-                Log.d(TAG, "deltaAngle = " + deltaAngle);
-				Log.d(TAG, "startAngle = " + startAngle);
+
+                if(DEBUG_MODE) {
+                    Log.d(TAG, "touchAngle = " + touchAngle);
+                    Log.d(TAG, "lastTouchAngle = " + lastTouchAngle);
+                    Log.d(TAG, "deltaAngle = " + deltaAngle);
+                    Log.d(TAG, "startAngle = " + startAngle);
+                }
 
 
                 lastTouchAngle = touchAngle;
@@ -179,7 +182,7 @@ public class CircleArena extends Actor {
 	}
 	//TODO: set colors from outside
 	private static final String TAG = CircleArena.class.getSimpleName();
-	private static final float FACTOR = 0.18f; //15% //TODO try on the phone dynamically and from outside
+	private static final float FACTOR = 0.18f;
 	
 	private Paint paint;
 	private Point center = new Point();
@@ -247,7 +250,7 @@ public class CircleArena extends Actor {
         c.drawColor(bgColor);
 		c.drawCircle(this.center.x, this.center.y, this.radius, this.paint);
         
-        if(false) //FIXME: DEBUG
+        if(DEBUG_MODE)
         {
             Paint p = new Paint();
             p.setStyle(Paint.Style.STROKE);

@@ -4,6 +4,8 @@ import android.graphics.Point;
 import android.graphics.PointF;
 
 public class Helpers {
+    public static final boolean DEBUG_MODE = false;
+
 	public static int boolToSign(boolean val)
     {
 		if(val){
@@ -61,5 +63,20 @@ public class Helpers {
         }
 
         return Math.toDegrees(angle);
+    }
+
+    public static double mag(double x, double y)
+    {
+        return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+    }
+
+    public static double scalar(double x1, double y1, double x2, double y2) {
+        return x1*x2+y1*y2;
+    }
+    public static double angle(double x1, double y1, double x2, double y2)
+    {
+        double magA = mag(x1, y1);
+        double magB = mag(x2, y2);
+        return Math.acos(scalar(x1, y1, x2, y2)/(magA*magB));
     }
 }

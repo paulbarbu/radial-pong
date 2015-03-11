@@ -95,6 +95,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
         if(arena.isBallCollided(ball)){
 
+            Log.d(TAG, "Angle of ball: " + Helpers.angle(ball.getVelocityX(), ball.getVelocityY(), ball.getVelocityX(), 0));
             //TODO: proper "reflection" of the ball from the pad
             //TODO: animate and sound
             ball.setVelocityX(-1*this.ball.getVelocityX());

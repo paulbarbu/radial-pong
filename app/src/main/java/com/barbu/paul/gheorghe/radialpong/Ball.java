@@ -37,10 +37,14 @@ public class Ball extends Actor {
 		Log.d(TAG, "Ball created!\n radius=" + radius + "\npos=" + pos);
 		
 	}
-	
-	public Point getPosition(){
-		return pos;
-	}
+
+    public Point getPosition(){
+        return pos;
+    }
+
+    public void setPosition(Point p){
+        pos = p;
+    }
 	
 	public int getVelocityX(){
 		return vx;

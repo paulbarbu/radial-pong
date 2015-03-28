@@ -128,7 +128,7 @@ public class CircleArena extends Actor {
 			int action = event.getAction();
 
             PointF touchPoint = new PointF(event.getX(), event.getY());
-            
+
 			if(MotionEvent.ACTION_DOWN == action && isInsideDistance(touchPoint) && isInsideAngle(touchPoint)){
 //				Log.d(TAG, "ACTION_DOWN");
 				this.touched = true;
@@ -187,7 +187,9 @@ public class CircleArena extends Actor {
 	private static final float FACTOR = 0.18f;
 	
 	private Paint paint;
-	private Point center = new Point();
+    private Point center = new Point();
+    private PointF normalE = new PointF(0, 0);
+    private PointF normalS = new PointF(0, 0);
 	private float radius;
     private float collisionRadius;
 	private Pad pad;
@@ -245,6 +247,37 @@ public class CircleArena extends Actor {
             bgColor = Color.WHITE;
             ballInside = true;
         }
+
+        if(isBallCollided(b)){
+            //TODO: proper "reflection" of the ball from the pad
+            //TODO: animate and sound
+
+            Vec2 v = new Vec2(b.getVelocityX(), b.getVelocityY());
+
+            Point p = b.getPosition();
+
+            PointF normalPoint = new PointF(center.x-p.x, center.y-p.y);
+            Vec2 normal = new Vec2(normalPoint.x, normalPoint.y);
+            normal = normal.toUnit();
+
+            if(DEBUG_MODE) {
+                normalE = new PointF(p.x + normal.getX() * 100, p.y + normal.getY() * 100);
+                normalS = new PointF(p.x, p.y);
+            }
+
+            //Vec2 u = normal.mul(v.dot(normal)/normal.dot(normal)); // assuming that the normal is not the unit vector
+            Vec2 u = normal.mul(v.dot(normal));
+            Vec2 w = v.sub(u);
+            Vec2 r = w.sub(u);
+
+            b.setVelocityX((int)(r.getX()));
+            b.setVelocityY((int)(r.getY()));
+
+            while(Helpers.pointDistance(b.getPosition(), this.center) >= this.collisionRadius)
+            {
+                b.setPosition(new Point((int)(p.x + r.getX()), (int)(p.y + r.getY())));
+            }
+        }
     }
 
 	@Override
@@ -265,11 +298,20 @@ public class CircleArena extends Actor {
         }
         
 		this.pad.draw(c);
+
+        if(DEBUG_MODE)
+        {
+            Paint p = new Paint();
+            p.setStyle(Paint.Style.STROKE);
+            p.setStrokeWidth(0);
+            p.setColor(Color.BLACK);
+            c.drawLine(normalS.x, normalS.y, normalE.x, normalE.y, p);
+        }
 	}
 
 	@Override
 	public boolean handleTouchEvent(MotionEvent event) {
-		return this.pad.handleTouchEvent(event);
+        return this.pad.handleTouchEvent(event);
 	}
 
     /**
@@ -302,8 +344,4 @@ public class CircleArena extends Actor {
         return ballInside && Helpers.pointDistance(b.getPosition(), this.center) >= this.collisionRadius
             && pad.isInsideAngle(b.getPosition(), paddingAngle);
 	}
-
-    public Point getCenter() {
-        return center;
-    }
 }

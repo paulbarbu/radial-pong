@@ -249,34 +249,32 @@ public class CircleArena extends Actor {
         }
 
         if(isBallCollided(b)){
-            //TODO: proper "reflection" of the ball from the pad
-            //TODO: animate and sound
-
+            //TODO: animate and sound + randomness + 180 deg + 90 deg
             Vec2 v = new Vec2(b.getVelocityX(), b.getVelocityY());
+            PointF p = b.getPosition();
 
-            Point p = b.getPosition();
-
-            PointF normalPoint = new PointF(center.x-p.x, center.y-p.y);
-            Vec2 normal = new Vec2(normalPoint.x, normalPoint.y);
+            Vec2 normal = new Vec2(center.x-p.x, center.y-p.y);
             normal = normal.toUnit();
 
+            // normal coordinates in the collision points
             if(DEBUG_MODE) {
                 normalE = new PointF(p.x + normal.getX() * 100, p.y + normal.getY() * 100);
                 normalS = new PointF(p.x, p.y);
             }
 
             //Vec2 u = normal.mul(v.dot(normal)/normal.dot(normal)); // assuming that the normal is not the unit vector
-            Vec2 u = normal.mul(v.dot(normal));
-            Vec2 w = v.sub(u);
-            Vec2 r = w.sub(u);
+            Vec2 u = normal.mul(v.dot(normal)); // perpendicular component
+            Vec2 w = v.sub(u); // parallel component
+            Vec2 r = w.sub(u); // mirror
 
-            b.setVelocityX((int)(r.getX()));
-            b.setVelocityY((int)(r.getY()));
+            b.setVelocityX(r.getX());
+            b.setVelocityY(r.getY());
 
-            while(Helpers.pointDistance(b.getPosition(), this.center) >= this.collisionRadius)
+            // move the ball out of the collision area
+            /*while(Helpers.pointDistance(b.getPosition(), this.center) >= this.collisionRadius)
             {
-                b.setPosition(new Point((int)(p.x + r.getX()), (int)(p.y + r.getY())));
-            }
+                b.setPosition(new PointF(p.x + r.getX() ,p.y + r.getY()));
+            }*/
         }
     }
 
@@ -299,6 +297,7 @@ public class CircleArena extends Actor {
         
 		this.pad.draw(c);
 
+        // draw the normal in the collision point
         if(DEBUG_MODE)
         {
             Paint p = new Paint();

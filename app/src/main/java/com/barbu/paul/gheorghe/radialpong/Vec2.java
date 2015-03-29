@@ -6,17 +6,17 @@ import android.graphics.PointF;
 public class Vec2 {
     private float x, y;
 
-    public Vec2(float x, float y) {
+    public Vec2(final float x, final float y) {
         this.x = x;
         this.y = y;
     }
     
-    public Vec2(PointF p) {
+    public Vec2(final PointF p) {
         this.x = p.x;
         this.y = p.y;
     }
 
-    public Vec2(Point p) {
+    public Vec2(final Point p) {
         this.x = p.x;
         this.y = p.y;
     }
@@ -29,26 +29,26 @@ public class Vec2 {
         return y;
     }
 
-    public static double mag(Vec2 v)
+    public static double mag(final Vec2 v)
     {
         return Math.sqrt(Math.pow(v.x, 2) + Math.pow(v.y, 2));
     }
 
-    public float dot(Vec2 v) {
+    public float dot(final Vec2 v) {
         return x*v.x+y*v.y;
     }
 
-    public double angle(Vec2 v)
+    public double angle(final Vec2 v)
     {
         return Math.toDegrees(Math.acos(dot(v)/(mag(this)*mag(v))));
     }
 
-    public Vec2 mul(float s)
+    public Vec2 mul(final float s)
     {
         return new Vec2(x*s, y*s);
     }
 
-    public Vec2 sub(Vec2 v)
+    public Vec2 sub(final Vec2 v)
     {
         return new Vec2(x-v.x, y-v.y);
     }

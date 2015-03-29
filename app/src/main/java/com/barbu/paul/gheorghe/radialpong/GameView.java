@@ -78,7 +78,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             return;
         }
 
-        Point p = ball.getPosition();
+        PointF p = ball.getPosition();
         float offset = ball.getRadius();
 
         if(p.x + offset >= displaySize.x || p.x - offset <= 0)

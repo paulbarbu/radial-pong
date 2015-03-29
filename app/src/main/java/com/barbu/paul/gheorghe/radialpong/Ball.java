@@ -5,14 +5,15 @@ import java.util.Random;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.PointF;
 import android.util.Log;
 import android.view.MotionEvent;
 
 public class Ball extends Actor {
 	private float radius;
-	private Point pos = new Point();
+	private PointF pos = new PointF();
 	private Paint paint;
-	private int vx, vy;
+	private float vx, vy;
 
 	private static final float FACTOR = 0.10f;
 	private static final int SPEED = 64; //this is the squared speed TODO: set from outside, this is the number of pixels per 30th part of a second (see MAX_FPS)
@@ -38,27 +39,27 @@ public class Ball extends Actor {
 		
 	}
 
-    public Point getPosition(){
+    public PointF getPosition(){
         return pos;
     }
 
-    public void setPosition(Point p){
+    public void setPosition(PointF p){
         pos = p;
     }
 	
-	public int getVelocityX(){
+	public float getVelocityX(){
 		return vx;
 	}
 	
-	public int getVelocityY(){
+	public float getVelocityY(){
 		return vy;
 	}
 	
-	public void setVelocityX(int val){
+	public void setVelocityX(final float val){
 		vx = val;
 	}
 	
-	public void setVelocityY(int val){
+	public void setVelocityY(final float val){
 		vy = val;
 	}
 	

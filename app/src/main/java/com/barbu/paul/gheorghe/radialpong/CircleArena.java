@@ -16,18 +16,15 @@ public class CircleArena extends Actor {
 	private class Pad extends Actor {
 		protected float startAngle=0, arcStartAngle=0, radius, strokeWidth, lastTouchAngle;
         protected static final float sweepAngle=90;
-       
 
-        protected Point center;
 		protected RectF boundingBox;
 		private boolean touched = false;
 
-        public Pad(final Point center, final float radius, final float strokeWidth){
-			this.center = new Point(center);
+        public Pad(final PointF center, final float radius, final float strokeWidth){
+			this.center = center;
 			this.radius = radius;
 			this.strokeWidth = strokeWidth;
-			
-			paint = new Paint();
+
 			paint.setStyle(Paint.Style.STROKE);
 			paint.setStrokeWidth(strokeWidth);
 			paint.setColor(Color.CYAN);
@@ -186,7 +183,6 @@ public class CircleArena extends Actor {
 
 	private static final String TAG = CircleArena.class.getSimpleName();
 
-    private Point center = new Point();
     private PointF normalE = new PointF(0, 0);
     private PointF normalS = new PointF(0, 0);
 	private float radius;
@@ -199,20 +195,18 @@ public class CircleArena extends Actor {
     private Vibrator vibrator;
     private long vibrateDuration;
 
-    public static class Builder implements IBuilder<CircleArena> {
+    public static class Builder extends Actor.Builder {
         private static final float FACTOR = 0.18f;
 
         private float ballRadius, radius, collisionRadius;
         private float strokeWidth;
-        private Point center = new Point();
         private int color, bgColorIn, bgColorOut;
         private Vibrator vibrator;
         private long vibrateDuration;
 
         public Builder(final Point displaySize)
         {
-            center.x = displaySize.x/2;
-            center.y = displaySize.y/2;
+            super(displaySize);
         }
 
         public Builder ballRadius(final float r)
@@ -265,16 +259,16 @@ public class CircleArena extends Actor {
     }
 
 	private CircleArena(Builder builder){
+        super(builder);
+
         bgColorIn = builder.bgColorIn;
         bgColorOut = builder.bgColorOut;
         bgColor = bgColorIn;
-        center = builder.center;
         radius = builder.radius;
         collisionRadius = builder.collisionRadius;
         vibrator = builder.vibrator;
         vibrateDuration = builder.vibrateDuration;
 
-        paint = new Paint();
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(builder.strokeWidth);
         paint.setColor(builder.color);

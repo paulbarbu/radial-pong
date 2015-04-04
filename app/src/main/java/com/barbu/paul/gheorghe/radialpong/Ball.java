@@ -12,22 +12,21 @@ import android.view.MotionEvent;
 
 public class Ball extends Actor {
 	private float radius;
-	private PointF pos;
 	private float vx, vy;
     private int speed;
 
 	private static final float FACTOR = 0.10f;
 	private static final String TAG = Ball.class.getSimpleName();
 
-    public static class Builder implements IBuilder<Ball> {
-        private PointF pos = new PointF();
+    public static class Builder extends Actor.Builder {
         private int color, speed;
 
-        public Builder(Point displaySize)
+        public Builder(final Point displaySize)
         {
+            super(displaySize);
+
             //TODO: remedy this offset
-            this.pos.x = displaySize.x/2 + 50;
-            this.pos.y = displaySize.y/2;
+            center.x += 50;
         }
 
         public Builder color(int c)
@@ -55,14 +54,13 @@ public class Ball extends Actor {
     }
 	
 	private Ball(Builder builder){
+        super(builder);
         speed = builder.speed;
 
-		paint = new Paint();
 		paint.setColor(builder.color);
 		paint.setStyle(Paint.Style.FILL);
 
-        pos = builder.pos;
-        radius = Math.min(pos.x, pos.y) * FACTOR;
+        radius = Math.min(center.x, center.y) * FACTOR;
 
         //set the direction
 //        Random r = new Random();
@@ -73,16 +71,16 @@ public class Ball extends Actor {
         vy =  8;
         vx = 0;
 
-		Log.d(TAG, "Ball created!\n radius=" + radius + "\npos=" + pos);
+		Log.d(TAG, "Ball created!\n radius=" + radius + "\ncenter=" + center);
 		
 	}
 
     public PointF getPosition(){
-        return pos;
+        return center;
     }
 
     public void setPosition(PointF p){
-        pos = p;
+        center = p;
     }
 	
 	public float getVelocityX(){
@@ -107,13 +105,13 @@ public class Ball extends Actor {
 	
 	@Override
 	public void update() {
-		pos.x += vx;
-		pos.y += vy;
+		center.x += vx;
+		center.y += vy;
 	}
 	
 	@Override
 	public void draw(Canvas c) {
-		c.drawCircle(pos.x, pos.y, radius, paint);
+		c.drawCircle(center.x, center.y, radius, paint);
 	}
 
 }

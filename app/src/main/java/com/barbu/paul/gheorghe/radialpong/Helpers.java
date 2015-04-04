@@ -45,6 +45,11 @@ public class Helpers {
         return new PointF(p.x - center.x, center.y - p.y);
     }
 
+    public static PointF mapDisplayPointTo(PointF p, PointF center)
+    {
+        return new PointF(p.x - center.x, center.y - p.y);
+    }
+
     /**
      * Compute the angle of the line segment denoted by the center of the geometrical plane XOY and (x, y) with
      * the OX axis

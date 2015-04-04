@@ -1,11 +1,13 @@
 package com.barbu.paul.gheorghe.radialpong;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.MotionEvent;
 import static com.barbu.paul.gheorghe.radialpong.Helpers.DEBUG_MODE;
@@ -18,10 +20,9 @@ public class CircleArena extends Actor {
 
         protected Point center;
 		protected RectF boundingBox;
-		private Paint paint;
 		private boolean touched = false;
-		
-		public Pad(final Point center, final float radius, final float strokeWidth){
+
+        public Pad(final Point center, final float radius, final float strokeWidth){
 			this.center = new Point(center);
 			this.radius = radius;
 			this.strokeWidth = strokeWidth;
@@ -182,41 +183,104 @@ public class CircleArena extends Actor {
             return false;
 		}
 	}
-	//TODO: set colors from outside
+
 	private static final String TAG = CircleArena.class.getSimpleName();
-	private static final float FACTOR = 0.18f;
-	
-	private Paint paint;
+
     private Point center = new Point();
     private PointF normalE = new PointF(0, 0);
     private PointF normalS = new PointF(0, 0);
 	private float radius;
     private float collisionRadius;
 	private Pad pad;
-    private int bgColor = Color.WHITE;
+    private int bgColor;
+    private final int bgColorIn;
+    private final int bgColorOut;
     private boolean ballInside = true;
+    private Vibrator vibrator;
+    private long vibrateDuration;
 
-	public CircleArena(final Point displaySize, final float ballRadius){
-		this.center.x = displaySize.x/2;
-		this.center.y = displaySize.y/2;
-		
-		this.radius = Math.min(this.center.x, this.center.y);
-		
-		float strokeWidth = this.radius * FACTOR;
-		this.radius -= strokeWidth; // reduce the radius so I allow the stroke to be displayed on screen
-				
-		this.paint = new Paint();
-		this.paint.setStyle(Paint.Style.STROKE);
-		this.paint.setStrokeWidth(strokeWidth);
-		this.paint.setColor(0xC8000000);
-		
-		this.pad = new Pad(center, radius, strokeWidth);
-        
-        this.collisionRadius = this.radius - strokeWidth/2 - ballRadius;
-		
-//		Log.d(TAG, "Circle arena created!\ndisplaySize: " + displaySize + "\n radius=" + this.radius +
-//			"\nstrokeWidth=" + strokeWidth + "\ncenter=" + this.center);
-	}
+    public static class Builder implements IBuilder<CircleArena> {
+        private static final float FACTOR = 0.18f;
+
+        private float ballRadius, radius, collisionRadius;
+        private float strokeWidth;
+        private Point center = new Point();
+        private int color, bgColorIn, bgColorOut;
+        private Vibrator vibrator;
+        private long vibrateDuration;
+
+        public Builder(final Point displaySize)
+        {
+            center.x = displaySize.x/2;
+            center.y = displaySize.y/2;
+        }
+
+        public Builder ballRadius(final float r)
+        {
+            ballRadius = r;
+            return this;
+        }
+
+        public Builder bgColorIn(int c)
+        {
+            bgColorIn = c;
+            return this;
+        }
+
+        public Builder bgColorOut(int c)
+        {
+            bgColorOut = c;
+            return this;
+        }
+
+        public Builder color(int c)
+        {
+            color = c;
+            return this;
+        }
+
+        public Builder vibrator(Vibrator v)
+        {
+            vibrator = v;
+            return this;
+        }
+
+        public Builder vibrateDuration(long duration)
+        {
+            vibrateDuration = duration;
+            return this;
+        }
+
+        public CircleArena build()
+        {
+            radius = Math.min(center.x, center.y);
+            strokeWidth = radius * FACTOR;
+
+            radius -= strokeWidth; // reduce the radius so I allow the stroke to be displayed on screen
+
+            collisionRadius = this.radius - strokeWidth/2 - ballRadius;
+
+            return new CircleArena(this);
+        }
+    }
+
+	private CircleArena(Builder builder){
+        bgColorIn = builder.bgColorIn;
+        bgColorOut = builder.bgColorOut;
+        bgColor = bgColorIn;
+        center = builder.center;
+        radius = builder.radius;
+        collisionRadius = builder.collisionRadius;
+        vibrator = builder.vibrator;
+        vibrateDuration = builder.vibrateDuration;
+
+        paint = new Paint();
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(builder.strokeWidth);
+        paint.setColor(builder.color);
+
+        pad = new Pad(center, radius, builder.strokeWidth);
+    }
 
 	@Override
 	public void update() {
@@ -238,13 +302,19 @@ public class CircleArena extends Actor {
     {
         if(isBallOutside(b))
         {
-            //TODO: vibrate ONCE
-            bgColor = Color.RED;
+            // vibrate once if the transition happened now
+            if(ballInside)
+            {
+                vibrator.vibrate(vibrateDuration);
+                //TODO: lose a heart
+            }
+
+            bgColor = bgColorOut;
             ballInside = false;
         }
         else if(isBallInside(b))
         {
-            bgColor = Color.WHITE;
+            bgColor = bgColorIn;
             ballInside = true;
         }
 
@@ -270,11 +340,7 @@ public class CircleArena extends Actor {
             b.setVelocityX(r.getX());
             b.setVelocityY(r.getY());
 
-            // move the ball out of the collision area
-            /*while(Helpers.pointDistance(b.getPosition(), this.center) >= this.collisionRadius)
-            {
-                b.setPosition(new PointF(p.x + r.getX() ,p.y + r.getY()));
-            }*/
+            //TODO: gain a point
         }
     }
 

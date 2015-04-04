@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -36,9 +37,21 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 		if(display != null){
 			display.getSize(displaySize);
 		}
+
+        Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
 		
-		ball = new Ball(displaySize);
-        arena = new CircleArena(displaySize, ball.getRadius());
+		ball = new Ball.Builder(displaySize)
+                .color(0xFF0000FF)
+                .speed(64)
+                .build();
+        arena = new CircleArena.Builder(displaySize)
+                .ballRadius(ball.getRadius())
+                .color(0xC8000000)
+                .bgColorIn(Color.WHITE)
+                .bgColorOut(Color.RED)
+                .vibrator(v)
+                .vibrateDuration(500)
+                .build();
 		
 		surfaceHolder.addCallback(this);
 		

@@ -1,6 +1,5 @@
 package com.barbu.paul.gheorghe.radialpong;
 
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -10,6 +9,7 @@ import android.graphics.RectF;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.MotionEvent;
+
 import static com.barbu.paul.gheorghe.radialpong.Helpers.DEBUG_MODE;
 
 public class CircleArena extends Actor {
@@ -27,7 +27,7 @@ public class CircleArena extends Actor {
 
 			paint.setStyle(Paint.Style.STROKE);
 			paint.setStrokeWidth(strokeWidth);
-			paint.setColor(Color.CYAN);
+			paint.setColor(0xFF99CC00); //TODO: Build this with builder
 			
 			boundingBox = new RectF(center.x-radius, center.y-radius, center.x + radius, center.y+radius);
 			//Log.d(TAG, "Pad created");
@@ -194,6 +194,7 @@ public class CircleArena extends Actor {
     private boolean ballInside = true;
     private Vibrator vibrator;
     private long vibrateDuration;
+    private Score score;
 
     public static class Builder extends Actor.Builder {
         private static final float FACTOR = 0.18f;
@@ -203,6 +204,7 @@ public class CircleArena extends Actor {
         private int color, bgColorIn, bgColorOut;
         private Vibrator vibrator;
         private long vibrateDuration;
+        private Score score;
 
         public Builder(final Point displaySize)
         {
@@ -230,6 +232,12 @@ public class CircleArena extends Actor {
         public Builder color(int c)
         {
             color = c;
+            return this;
+        }
+
+        public Builder score(Score s)
+        {
+            score = s;
             return this;
         }
 
@@ -261,6 +269,7 @@ public class CircleArena extends Actor {
 	private CircleArena(Builder builder){
         super(builder);
 
+        score = builder.score;
         bgColorIn = builder.bgColorIn;
         bgColorOut = builder.bgColorOut;
         bgColor = bgColorIn;
@@ -296,11 +305,11 @@ public class CircleArena extends Actor {
     {
         if(isBallOutside(b))
         {
-            // vibrate once if the transition happened now
+            // vibrate once and lose a life if the transition happened now
             if(ballInside)
             {
                 vibrator.vibrate(vibrateDuration);
-                //TODO: lose a heart
+                score.decrementLives();
             }
 
             bgColor = bgColorOut;
@@ -335,6 +344,7 @@ public class CircleArena extends Actor {
             b.setVelocityY(r.getY());
 
             //TODO: gain a point
+            score.incrementPoints();
         }
     }
 

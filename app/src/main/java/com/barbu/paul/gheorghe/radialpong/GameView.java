@@ -1,11 +1,15 @@
 package com.barbu.paul.gheorghe.radialpong;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.Display;
@@ -22,7 +26,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 	
 	protected CircleArena arena;
 	protected Ball ball;
+    protected Score score;
     private Point displaySize =  new Point();
+    private Paint scorePaint = new Paint();
+    Bitmap heart = BitmapFactory.decodeResource(getResources(), R.drawable.heart);
+    Bitmap point = BitmapFactory.decodeResource(getResources(), R.drawable.target);
 
 	public GameView(Context context){
 		super(context);		
@@ -39,19 +47,25 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 		}
 
         Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-		
+		score = new Score(3, 0); //TODO: score should be Observable
+        //TODO: GameOverActivity should observe Score and when notified of gameOver, should close the gameView and display itself
+
 		ball = new Ball.Builder(displaySize)
-                .color(0xFF0000FF)
+                .color(0xFF33B5E5)
                 .speed(64)
                 .build();
         arena = new CircleArena.Builder(displaySize)
                 .ballRadius(ball.getRadius())
-                .color(0xC8000000)
+                .color(0x7FFFBB33)
                 .bgColorIn(Color.WHITE)
-                .bgColorOut(Color.RED)
+                .bgColorOut(0xFFFF4444)
                 .vibrator(v)
                 .vibrateDuration(500)
+                .score(score)
                 .build();
+
+        scorePaint.setAntiAlias(true);
+        scorePaint.setTextSize(displaySize.y*10/100); // 10% of the display size
 		
 		surfaceHolder.addCallback(this);
 		
@@ -79,11 +93,36 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 		try{
 			arena.draw(c);
 			ball.draw(c);
+
+            drawScore(c);
 		}
 		finally{
 			this.surfaceHolder.unlockCanvasAndPost(c);
 		}
 	}
+
+    private void drawScore(Canvas c)
+    {
+        Rect bounds = new Rect();
+        int top, left;
+        final int padding = 10;
+
+        String lives = String.valueOf(score.getLives());
+
+        scorePaint.getTextBounds(lives, 0, lives.length(), bounds);
+        top = displaySize.y - bounds.bottom - padding;
+        left = displaySize.x - bounds.right - padding;
+        c.drawBitmap(heart, left-heart.getWidth(), displaySize.y - heart.getHeight() - padding, scorePaint);
+        c.drawText(lives, left, top, scorePaint);
+
+        String points = String.valueOf(score.getPoints());
+        scorePaint.getTextBounds(points, 0, points.length(), bounds);
+        left = padding;
+        top = displaySize.y - bounds.bottom - padding;
+        c.drawBitmap(point, left, displaySize.y - point.getHeight() - padding, scorePaint);
+        c.drawText(points, left + point.getWidth(), top, scorePaint);
+
+    }
 
 	public void update(){
         if(!arena.isTouched())

@@ -26,6 +26,7 @@ public abstract class Actor {
 
     public Actor(Builder builder){
         center = builder.center;
+        paint.setAntiAlias(true);
     }
 
 	public abstract void update();

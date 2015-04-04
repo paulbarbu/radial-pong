@@ -1,14 +1,10 @@
 package com.barbu.paul.gheorghe.radialpong;
 
-import java.util.Random;
-
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.util.Log;
-import android.view.MotionEvent;
 
 public class Ball extends Actor {
 	private float radius;

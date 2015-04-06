@@ -9,7 +9,6 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.Display;
@@ -17,6 +16,8 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
+
+import java.util.Observer;
 
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 	private static final String TAG = GameView.class.getSimpleName();
@@ -70,6 +71,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 		surfaceHolder.addCallback(this);
 		
 		setFocusable(true);
+
+        score.addObserver((Observer) context);
 	}
 
 	@Override

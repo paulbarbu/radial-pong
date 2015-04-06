@@ -1,10 +1,14 @@
 package com.barbu.paul.gheorghe.radialpong;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-public class GameActivity extends Activity {
+import java.util.Observable;
+import java.util.Observer;
+
+public class GameActivity extends Activity implements Observer {
 	private static final String TAG = GameActivity.class.getSimpleName();
 
 	@Override
@@ -14,4 +18,12 @@ public class GameActivity extends Activity {
 		
 		Log.d(TAG, "GameActivity Created");
 	}
+
+    public void update(Observable obs, Object obj)
+    {
+        Intent gameOver = new Intent(this, GameOverActivity.class);
+
+        startActivity(gameOver);
+        finish();
+    }
 }

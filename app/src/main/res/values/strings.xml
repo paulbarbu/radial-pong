@@ -8,7 +8,10 @@
     <string name="settings">Settings</string>
     <string name="title_activity_game">GameActivity</string>
     <string name="title_activity_game_over">GameOverActivity</string>
+    <string name="button_submit_score">Submit</string>
+    <string name="nickname_hint">Nickname</string>
+    <string name="submit_help">Enter a nickname and submit your score</string>
+    <string name="game_over">GAME OVER!</string>
 
-    <string name="hello_world">Hello world!</string>
 
 </resources>

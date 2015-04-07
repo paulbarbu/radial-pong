@@ -34,6 +34,11 @@ public class Vec2 {
         return Math.sqrt(Math.pow(v.x, 2) + Math.pow(v.y, 2));
     }
 
+    public double mag()
+    {
+        return mag(this);
+    }
+
     public float dot(final Vec2 v) {
         return x*v.x+y*v.y;
     }
@@ -58,5 +63,12 @@ public class Vec2 {
         float length = (float) mag(this);
         
         return new Vec2(x/length, y/length);
+    }
+
+    public Vec2 changeMagTo(float newMag)
+    {
+        float currentMag = (float) mag(this);
+
+        return this.mul(newMag/currentMag);
     }
 }

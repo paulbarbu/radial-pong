@@ -3,12 +3,12 @@ package com.barbu.paul.gheorghe.radialpong;
 import java.util.Observable;
 
 public class Score extends Observable {
+    public final static String EXTRA_LIVES = "com.barbu.paul.gheorghe.radialpong.LIVES";
     private int lives;
     private int points;
 
     public Score(int l, int p)
     {
-        //TODO: register observers
         lives = l;
         points = p;
     }
@@ -40,7 +40,7 @@ public class Score extends Observable {
         if(isGameOver())
         {
             setChanged();
-            notifyObservers();
+            notifyObservers(String.valueOf(points));
         }
     }
 

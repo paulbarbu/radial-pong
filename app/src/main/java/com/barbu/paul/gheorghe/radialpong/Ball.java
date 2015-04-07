@@ -6,6 +6,8 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.util.Log;
 
+import java.util.Random;
+
 public class Ball extends Actor {
 	private float radius;
 	private float vx, vy;
@@ -15,14 +17,11 @@ public class Ball extends Actor {
 	private static final String TAG = Ball.class.getSimpleName();
 
     public static class Builder extends Actor.Builder {
-        private int color, speed;
+        private int color, speed, maxOffset = 10;
 
         public Builder(final Point displaySize)
         {
             super(displaySize);
-
-            //TODO: remedy this offset
-            center.x += 50;
         }
 
         public Builder color(int c)
@@ -31,10 +30,16 @@ public class Ball extends Actor {
             return this;
         }
 
+        public Builder maxOffset(int mo)
+        {
+            maxOffset = mo;
+            return this;
+        }
+
         /**
          * The squared speed
          *
-         * @param s the number of pixels per 30th part of a second (see MAX_FPS)
+         * @param s the squared number of pixels per 30th part of a second (see MAX_FPS)
          * @return this instance
          */
         public Builder speed(int s)
@@ -59,13 +64,16 @@ public class Ball extends Actor {
         radius = Math.min(center.x, center.y) * FACTOR;
 
         //set the direction
-//        Random r = new Random();
-//        int val = r.nextInt(SPEED+1);
-//
-//        vx = (int) Math.sqrt(val) * Helpers.boolToSign(r.nextBoolean());
-//        vy = (int) Math.sqrt(SPEED-val) * Helpers.boolToSign(r.nextBoolean());
-        vy =  8;
-        vx = 0;
+        Random r = new Random();
+        int val = r.nextInt(speed+1);
+
+        vx = (float) Math.sqrt(val) * Helpers.boolToSign(r.nextBoolean());
+        vy = (float) Math.sqrt(speed-val) * Helpers.boolToSign(r.nextBoolean());
+
+        // don't center it on the screen in order to avoid being on the
+        // normal vector when colliding with the pad
+        center.x += r.nextInt(builder.maxOffset) * Helpers.boolToSign(r.nextBoolean());
+        center.y += r.nextInt(builder.maxOffset) * Helpers.boolToSign(r.nextBoolean());
 
 		Log.d(TAG, "Ball created!\n radius=" + radius + "\ncenter=" + center);
 		

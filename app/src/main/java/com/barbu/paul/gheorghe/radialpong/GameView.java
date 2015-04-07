@@ -53,7 +53,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
 		ball = new Ball.Builder(displaySize)
                 .color(0xFF33B5E5)
-                .speed(64)
+                .speed(25)
+                .maxOffset(50)
                 .build();
         arena = new CircleArena.Builder(displaySize)
                 .ballRadius(ball.getRadius())

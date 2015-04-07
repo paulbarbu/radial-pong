@@ -36,7 +36,7 @@
         android:text="@string/submit_help"
         android:id="@+id/textView"
         android:labelFor="@id/nickname"
-        android:layout_below="@+id/textView2"
+        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 
     <TextView
@@ -45,11 +45,21 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/game_over"
         android:id="@+id/textView2"
-        android:textColor="#ffff252c"
+        android:textColor="#FFFF4444"
         android:textStyle="bold"
         android:singleLine="false"
         android:clickable="false"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_above="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="112dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/points"
+        android:layout_above="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:textColor="#FF99CC00" />
 
 </RelativeLayout>

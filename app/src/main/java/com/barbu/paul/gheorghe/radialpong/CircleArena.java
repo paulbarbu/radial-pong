@@ -340,6 +340,8 @@ public class CircleArena extends Actor {
             Vec2 w = v.sub(u); // parallel component
             Vec2 r = w.sub(u); // mirror
 
+            r = r.changeMagTo((float) r.mag() + 0.5f);
+
             b.setVelocityX(r.getX());
             b.setVelocityY(r.getY());
 

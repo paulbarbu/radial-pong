@@ -19,6 +19,12 @@ public abstract class Actor {
             center.x = displaySize.x/2;
             center.y = displaySize.y/2;
         }
+
+        public Builder(final PointF center)
+        {
+            this.center.x = center.x;
+            this.center.y = center.y;
+        }
     }
 
     public Actor(){

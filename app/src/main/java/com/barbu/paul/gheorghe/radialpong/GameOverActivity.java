@@ -1,9 +1,7 @@
 package com.barbu.paul.gheorghe.radialpong;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;

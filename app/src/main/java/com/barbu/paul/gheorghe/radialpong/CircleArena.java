@@ -6,7 +6,6 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import java.util.Random;
@@ -161,7 +160,7 @@ public class CircleArena extends Actor {
         }
 
         if(isBallCollided(b)){
-            //TODO: animate and sound + randomness + 180 deg + 90 deg
+            //TODO: animate and sound
             Vec2 v = new Vec2(b.getVelocityX(), b.getVelocityY());
             PointF p = b.getPosition();
 

@@ -35,7 +35,8 @@ public class GameOverActivity extends Activity {
         if(nickname.length() <= 0)
         {
             Log.d(TAG, "Submitted invalid nick");
-            //TODO: set error!
+            TextView pointsText = (TextView) findViewById(R.id.errorText);
+            pointsText.setText(getString(R.string.non_empty_nick));
         }
         else {
             Log.d(TAG, "Submitted nick: " + nickname);
@@ -48,7 +49,8 @@ public class GameOverActivity extends Activity {
 
             if(null == uri)
             {
-                //TODO: set error!
+                TextView pointsText = (TextView) findViewById(R.id.errorText);
+                pointsText.setText(getString(R.string.db_err));
                 Log.d(TAG, "Error inserting value into DB");
             }
             else

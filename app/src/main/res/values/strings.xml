@@ -14,5 +14,7 @@
     <string name="game_over">GAME OVER!</string>
     <string name="points">You scored %s points</string>
     <string name="title_activity_highscores">HighscoresActivity</string>
+    <string name="non_empty_nick">Please enter a non-empty nickname!</string>
+    <string name="db_err">Unknown database error!</string>
 
 </resources>

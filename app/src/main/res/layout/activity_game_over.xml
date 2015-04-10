@@ -29,7 +29,7 @@
         android:maxLines="1"
         android:singleLine="true"
         android:lines="1"
-        android:maxLength="20" />
+        android:maxLength="15" />
 
     <TextView
         android:layout_width="wrap_content"

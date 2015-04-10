@@ -182,7 +182,7 @@ public class CircleArena extends Actor {
                 r = r.changeMagTo((float) r.mag() + 0.2f);
             }
 
-            r = r.addAngle(random.nextFloat() * 15 * Helpers.boolToSign(random.nextBoolean()));
+            //r = r.addAngle(random.nextFloat() * 15 * Helpers.boolToSign(random.nextBoolean()));
 
             b.setVelocityX(r.getX());
             b.setVelocityY(r.getY());

@@ -7,6 +7,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.SimpleCursorAdapter;
 
 public class HighscoresActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -52,6 +53,9 @@ public class HighscoresActivity extends ListActivity implements LoaderManager.Lo
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.d(TAG, "finished");
+        findViewById(R.id.loading_scores).setVisibility(View.GONE);
+        findViewById(R.id.empty_scores).setVisibility(View.VISIBLE);
         adapter.swapCursor(data);
     }
 

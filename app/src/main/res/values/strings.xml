@@ -16,5 +16,6 @@
     <string name="title_activity_highscores">HighscoresActivity</string>
     <string name="non_empty_nick">Please enter a non-empty nickname!</string>
     <string name="db_err">Unknown database error!</string>
+    <string name="empty_scores">No games were played!</string>
 
 </resources>

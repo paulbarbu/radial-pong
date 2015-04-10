@@ -11,9 +11,25 @@
         android:layout_height="wrap_content"
         android:drawSelectorOnTop="false"/>
 
-    <ProgressBar
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@android:id/empty"
-        android:layout_gravity="center"/>
+        android:id="@android:id/empty">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/loading_scores"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/empty_scores"
+            android:visibility="gone"
+            android:id="@+id/empty_scores"/>
+
+    </RelativeLayout>
+
 </LinearLayout>

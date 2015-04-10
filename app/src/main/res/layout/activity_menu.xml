@@ -22,6 +22,7 @@
         android:layout_height="wrap_content"
         android:text="@string/highscores"
         android:layout_above="@+id/button_settings"
+        android:onClick="highscores"
         />
     
     <Button android:id="@id/button_settings"

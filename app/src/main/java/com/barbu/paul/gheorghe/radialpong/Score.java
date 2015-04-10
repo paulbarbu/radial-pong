@@ -3,7 +3,7 @@ package com.barbu.paul.gheorghe.radialpong;
 import java.util.Observable;
 
 public class Score extends Observable {
-    public final static String EXTRA_LIVES = "com.barbu.paul.gheorghe.radialpong.LIVES";
+    public final static String EXTRA_POINTS = "com.barbu.paul.gheorghe.radialpong.POINTS";
     private int lives;
     private int points;
 

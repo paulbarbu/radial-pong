@@ -22,5 +22,10 @@ public class MenuActivity extends Activity {
 		
 		startActivity(startNewGame);
 	}
+
+    public void highscores(View view){
+        Intent highscores = new Intent(this, HighscoresActivity.class);
+        startActivity(highscores);
+    }
 	
 }

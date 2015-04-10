@@ -23,7 +23,7 @@ public class GameActivity extends Activity implements Observer {
     {
         Intent gameOver = new Intent(this, GameOverActivity.class);
 
-        gameOver.putExtra(Score.EXTRA_LIVES, obj.toString());
+        gameOver.putExtra(Score.EXTRA_POINTS, obj.toString());
 
         startActivity(gameOver);
         finish();

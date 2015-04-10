@@ -48,14 +48,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 		}
 
         Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-		score = new Score(3, 0); //TODO: score should be Observable
-        //TODO: GameOverActivity should observe Score and when notified of gameOver, should close the gameView and display itself
+		score = new Score(3, 0);
 
 		ball = new Ball.Builder(displaySize)
                 .color(0xFF33B5E5)
                 .speed(25)
                 .maxOffset(50)
                 .build();
+
         arena = new CircleArena.Builder(displaySize)
                 .ballRadius(ball.getRadius())
                 .color(0x7FFFBB33)

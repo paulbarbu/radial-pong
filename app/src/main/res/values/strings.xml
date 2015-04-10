@@ -13,6 +13,6 @@
     <string name="submit_help">Enter a nickname and submit your score</string>
     <string name="game_over">GAME OVER!</string>
     <string name="points">You scored %s points</string>
-
+    <string name="title_activity_highscores">HighscoresActivity</string>
 
 </resources>

@@ -33,8 +33,18 @@
         <activity
             android:name=".GameOverActivity"
             android:label="@string/title_activity_game_over"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
+        <activity
+            android:name=".HighscoresActivity"
+            android:label="@string/title_activity_highscores"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+        </activity>
+
+        <provider
+            android:name=".ScoreContentProvider"
+            android:authorities="com.barbu.paul.gheorghe.radialpong.score"
+            android:exported="false" />
     </application>
 
 </manifest>

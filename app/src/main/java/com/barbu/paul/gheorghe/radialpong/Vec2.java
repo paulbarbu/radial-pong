@@ -48,6 +48,12 @@ public class Vec2 {
         return Math.toDegrees(Math.acos(dot(v)/(mag(this)*mag(v))));
     }
 
+    public Vec2 addAngle(float a)
+    {
+        double rad = Math.toRadians(a);
+        return new Vec2((float) (x+Math.cos(rad)), (float) (y+Math.sin(rad)));
+    }
+
     public Vec2 mul(final float s)
     {
         return new Vec2(x*s, y*s);

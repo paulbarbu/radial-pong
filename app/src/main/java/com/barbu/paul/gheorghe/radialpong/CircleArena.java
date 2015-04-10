@@ -9,6 +9,8 @@ import android.os.Vibrator;
 import android.util.Log;
 import android.view.MotionEvent;
 
+import java.util.Random;
+
 import static com.barbu.paul.gheorghe.radialpong.Helpers.DEBUG_MODE;
 
 public class CircleArena extends Actor {
@@ -26,6 +28,7 @@ public class CircleArena extends Actor {
     private Vibrator vibrator;
     private long vibrateDuration;
     private Score score;
+    private Random random = new Random();
 
     public static class Builder extends Actor.Builder {
         private static final float FACTOR = 0.18f;
@@ -180,10 +183,11 @@ public class CircleArena extends Actor {
                 r = r.changeMagTo((float) r.mag() + 0.2f);
             }
 
+            r = r.addAngle(random.nextFloat() * 15 * Helpers.boolToSign(random.nextBoolean()));
+
             b.setVelocityX(r.getX());
             b.setVelocityY(r.getY());
 
-            //TODO: gain a point
             score.incrementPoints();
         }
     }

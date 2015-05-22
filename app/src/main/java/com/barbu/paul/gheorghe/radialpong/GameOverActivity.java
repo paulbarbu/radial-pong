@@ -30,7 +30,7 @@ public class GameOverActivity extends Activity {
         EditText nicknameText = (EditText) findViewById(R.id.nickname);
         String nickname = nicknameText.getText().toString();
 
-        if(nickname.length() <= 0)
+        if(!nickname.matches("[a-zA-Z]+"))
         {
             Log.d(TAG, "Submitted invalid nick");
             TextView pointsText = (TextView) findViewById(R.id.errorText);
